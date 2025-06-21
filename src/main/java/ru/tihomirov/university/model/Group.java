@@ -12,7 +12,7 @@ public class Group {
 
     @Id
     @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "group_id_seq")
-    @SequenceGenerator(name = "group_id_seq", sequenceName = "group_id_seq", allocationSize = 1)
+    @SequenceGenerator(name = "group_id_seq", sequenceName = "group_id_seq", initialValue = 1, allocationSize = 1)
     private Long id;
 
     private String name;

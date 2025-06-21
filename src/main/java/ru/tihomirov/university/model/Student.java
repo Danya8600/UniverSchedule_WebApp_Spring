@@ -12,7 +12,7 @@ public class Student {
 
     @Id
     @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "student_id_seq")
-    @SequenceGenerator(name = "student_id_seq", sequenceName = "student_id_seq", allocationSize = 1)
+    @SequenceGenerator(name = "student_id_seq", sequenceName = "student_id_seq", initialValue = 1, allocationSize = 1)
     private Long id;
 
     private String lastName;
