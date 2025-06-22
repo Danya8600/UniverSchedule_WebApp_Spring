@@ -6,6 +6,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import ru.tihomirov.university.dto.ScheduleInfoDto;
 import ru.tihomirov.university.model.Schedule;
 import ru.tihomirov.university.service.ScheduleService;
 
@@ -68,5 +69,17 @@ public class ScheduleController {
     @GetMapping("/date/{date}")
     public ResponseEntity<List<Schedule>> getByDate(@PathVariable @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate date) {
         return ResponseEntity.ok(scheduleService.getByDate(date));
+    }
+
+    // Красивый вывод по группе
+    @GetMapping("/group/{groupId}/info")
+    public ResponseEntity<List<ScheduleInfoDto>> getFormattedByGroup(@PathVariable Long groupId) {
+        return ResponseEntity.ok(scheduleService.getFormattedScheduleByGroup(groupId));
+    }
+
+    // Красивый вывод по преподавателю
+    @GetMapping("/teacher/{teacherId}/info")
+    public ResponseEntity<List<ScheduleInfoDto>> getFormattedByTeacher(@PathVariable Long teacherId) {
+        return ResponseEntity.ok(scheduleService.getFormattedScheduleByTeacher(teacherId));
     }
 }

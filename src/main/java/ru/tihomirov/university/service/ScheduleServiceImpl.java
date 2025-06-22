@@ -4,12 +4,14 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
+import ru.tihomirov.university.dto.ScheduleInfoDto;
 import ru.tihomirov.university.exception.EntityNotFoundException;
 import ru.tihomirov.university.model.Schedule;
 import ru.tihomirov.university.repository.*;
 
 import java.time.LocalDate;
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -41,7 +43,7 @@ public class ScheduleServiceImpl implements ScheduleService {
             throw new EntityNotFoundException("Schedule not found with id: " + id);
         }
         updatedSchedule.setId(id);
-        return save(updatedSchedule); // переиспользуем save для подгрузки сущностей
+        return save(updatedSchedule);
     }
 
     @Override
@@ -86,5 +88,32 @@ public class ScheduleServiceImpl implements ScheduleService {
     @Override
     public List<Schedule> getByDate(LocalDate date) {
         return scheduleRepository.findByDate(date);
+    }
+
+    @Override
+    public List<ScheduleInfoDto> getFormattedScheduleByGroup(Long groupId) {
+        return scheduleRepository.findByGroupId(groupId)
+                .stream()
+                .map(this::mapToDto)
+                .collect(Collectors.toList());
+    }
+
+    @Override
+    public List<ScheduleInfoDto> getFormattedScheduleByTeacher(Long teacherId) {
+        return scheduleRepository.findByTeacherId(teacherId)
+                .stream()
+                .map(this::mapToDto)
+                .collect(Collectors.toList());
+    }
+
+    private ScheduleInfoDto mapToDto(Schedule s) {
+        return new ScheduleInfoDto()
+                .setDate(s.getDate())
+                .setStartTime(s.getStartTime())
+                .setEndTime(s.getEndTime())
+                .setTeacherFullName(s.getTeacher().getLastName() + " " + s.getTeacher().getName() + " " + s.getTeacher().getMiddleName())
+                .setCourseName(s.getCourse().getName())
+                .setClassTypeName(s.getClassType().getName())
+                .setGroupName(s.getGroup().getName());
     }
 }
