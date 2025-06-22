@@ -1,8 +1,8 @@
 package ru.tihomirov.university.service;
 
-import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+import ru.tihomirov.university.exception.EntityNotFoundException;
 import ru.tihomirov.university.model.Schedule;
 import ru.tihomirov.university.repository.*;
 
