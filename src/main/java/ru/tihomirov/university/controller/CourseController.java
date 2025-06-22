@@ -4,6 +4,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import ru.tihomirov.university.model.Course;
+import ru.tihomirov.university.model.Group;
 import ru.tihomirov.university.service.CourseService;
 
 import java.util.List;
@@ -23,6 +24,11 @@ public class CourseController {
     @GetMapping("/{id}")
     public ResponseEntity<Course> getCourseById(@PathVariable Long id) {
         return ResponseEntity.ok(courseService.getById(id));
+    }
+
+    @GetMapping("/name/{name}")
+    public ResponseEntity<Course> getByName(@PathVariable String name) {
+        return ResponseEntity.ok(courseService.getByName(name));
     }
 
     @PostMapping

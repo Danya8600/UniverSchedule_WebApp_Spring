@@ -4,6 +4,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import ru.tihomirov.university.exception.EntityNotFoundException;
 import ru.tihomirov.university.model.Course;
+import ru.tihomirov.university.model.Group;
 import ru.tihomirov.university.repository.CourseRepository;
 
 import java.util.List;
@@ -23,6 +24,12 @@ public class CourseServiceImpl implements CourseService {
     public Course getById(Long id) {
         return courseRepository.findById(id)
                 .orElseThrow(() -> new EntityNotFoundException("Course not found with id: " + id));
+    }
+
+    @Override
+    public Course getByName(String name) {
+        return courseRepository.findByName(name)
+                .orElseThrow(() -> new EntityNotFoundException("Course not found with name: " + name));
     }
 
     @Override

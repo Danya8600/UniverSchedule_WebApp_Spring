@@ -3,6 +3,7 @@ package ru.tihomirov.university.controller;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import ru.tihomirov.university.model.Group;
 import ru.tihomirov.university.model.Teacher;
 import ru.tihomirov.university.service.TeacherService;
 
@@ -23,6 +24,11 @@ public class TeacherController {
     @GetMapping("/{id}")
     public ResponseEntity<Teacher> getById(@PathVariable Long id) {
         return ResponseEntity.ok(teacherService.getById(id));
+    }
+
+    @GetMapping("/email/{email}")
+    public ResponseEntity<Teacher> getByEmail(@PathVariable String email) {
+        return ResponseEntity.ok(teacherService.getByEmail(email));
     }
 
     @PostMapping

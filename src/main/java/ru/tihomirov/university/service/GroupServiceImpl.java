@@ -26,6 +26,12 @@ public class GroupServiceImpl implements GroupService {
     }
 
     @Override
+    public Group getByName(String name) {
+        return groupRepository.findByName(name)
+                .orElseThrow(() -> new EntityNotFoundException("Group not found with name: " + name));
+    }
+
+    @Override
     public Group save(Group group) {
         return groupRepository.save(group);
     }
