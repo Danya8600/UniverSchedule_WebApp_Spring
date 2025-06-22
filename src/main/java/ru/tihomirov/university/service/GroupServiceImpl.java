@@ -2,11 +2,11 @@ package ru.tihomirov.university.service;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+import ru.tihomirov.university.exception.EntityNotFoundException;
 import ru.tihomirov.university.model.Group;
 import ru.tihomirov.university.repository.GroupRepository;
 
 import java.util.List;
-import java.util.Optional;
 
 @Service
 @RequiredArgsConstructor
@@ -20,8 +20,9 @@ public class GroupServiceImpl implements GroupService {
     }
 
     @Override
-    public Optional<Group> getById(Long id) {
-        return groupRepository.findById(id);
+    public Group getById(Long id) {
+        return groupRepository.findById(id)
+                .orElseThrow(() -> new EntityNotFoundException("Group not found with id: " + id));
     }
 
     @Override
@@ -30,7 +31,19 @@ public class GroupServiceImpl implements GroupService {
     }
 
     @Override
+    public Group update(Long id, Group updatedGroup) {
+        if (!groupRepository.existsById(id)) {
+            throw new EntityNotFoundException("Group not found with id: " + id);
+        }
+        updatedGroup.setId(id);
+        return groupRepository.save(updatedGroup);
+    }
+
+    @Override
     public void deleteById(Long id) {
+        if (!groupRepository.existsById(id)) {
+            throw new EntityNotFoundException("Group not found with id: " + id);
+        }
         groupRepository.deleteById(id);
     }
 }

@@ -2,11 +2,11 @@ package ru.tihomirov.university.service;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+import ru.tihomirov.university.exception.EntityNotFoundException;
 import ru.tihomirov.university.model.Teacher;
 import ru.tihomirov.university.repository.TeacherRepository;
 
 import java.util.List;
-import java.util.Optional;
 
 @Service
 @RequiredArgsConstructor
@@ -20,8 +20,9 @@ public class TeacherServiceImpl implements TeacherService {
     }
 
     @Override
-    public Optional<Teacher> getById(Long id) {
-        return teacherRepository.findById(id);
+    public Teacher getById(Long id) {
+        return teacherRepository.findById(id)
+                .orElseThrow(() -> new EntityNotFoundException("Teacher not found with id: " + id));
     }
 
     @Override
@@ -31,6 +32,9 @@ public class TeacherServiceImpl implements TeacherService {
 
     @Override
     public void deleteById(Long id) {
+        if (!teacherRepository.existsById(id)) {
+            throw new EntityNotFoundException("Teacher not found with id: " + id);
+        }
         teacherRepository.deleteById(id);
     }
 }
