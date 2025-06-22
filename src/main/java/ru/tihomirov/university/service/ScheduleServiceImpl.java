@@ -1,6 +1,8 @@
 package ru.tihomirov.university.service;
 
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import ru.tihomirov.university.exception.EntityNotFoundException;
 import ru.tihomirov.university.model.Schedule;
@@ -39,7 +41,7 @@ public class ScheduleServiceImpl implements ScheduleService {
             throw new EntityNotFoundException("Schedule not found with id: " + id);
         }
         updatedSchedule.setId(id);
-        return save(updatedSchedule); // переиспользуем метод save с подгрузкой сущностей
+        return save(updatedSchedule); // переиспользуем save для подгрузки сущностей
     }
 
     @Override
@@ -67,8 +69,18 @@ public class ScheduleServiceImpl implements ScheduleService {
     }
 
     @Override
+    public Page<Schedule> getByGroupIdPaged(Long groupId, Pageable pageable) {
+        return scheduleRepository.findByGroupId(groupId, pageable);
+    }
+
+    @Override
     public List<Schedule> getByTeacherId(Long teacherId) {
         return scheduleRepository.findByTeacherId(teacherId);
+    }
+
+    @Override
+    public Page<Schedule> getByTeacherIdPaged(Long teacherId, Pageable pageable) {
+        return scheduleRepository.findByTeacherId(teacherId, pageable);
     }
 
     @Override

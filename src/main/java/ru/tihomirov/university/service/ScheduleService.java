@@ -1,5 +1,7 @@
 package ru.tihomirov.university.service;
 
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import ru.tihomirov.university.model.Schedule;
 
 import java.time.LocalDate;
@@ -12,6 +14,8 @@ public interface ScheduleService {
     Schedule getById(Long id);
     List<Schedule> getAll();
     List<Schedule> getByGroupId(Long groupId);
+    Page<Schedule> getByGroupIdPaged(Long groupId, Pageable pageable);
     List<Schedule> getByTeacherId(Long teacherId);
+    Page<Schedule> getByTeacherIdPaged(Long teacherId, Pageable pageable);
     List<Schedule> getByDate(LocalDate date);
 }

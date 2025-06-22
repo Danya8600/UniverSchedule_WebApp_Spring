@@ -1,6 +1,8 @@
 package ru.tihomirov.university.controller;
 
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -48,9 +50,19 @@ public class ScheduleController {
         return ResponseEntity.ok(scheduleService.getByGroupId(groupId));
     }
 
+    @GetMapping("/group/{groupId}/page")
+    public ResponseEntity<Page<Schedule>> getByGroupPaged(@PathVariable Long groupId, Pageable pageable) {
+        return ResponseEntity.ok(scheduleService.getByGroupIdPaged(groupId, pageable));
+    }
+
     @GetMapping("/teacher/{teacherId}")
     public ResponseEntity<List<Schedule>> getByTeacher(@PathVariable Long teacherId) {
         return ResponseEntity.ok(scheduleService.getByTeacherId(teacherId));
+    }
+
+    @GetMapping("/teacher/{teacherId}/page")
+    public ResponseEntity<Page<Schedule>> getByTeacherPaged(@PathVariable Long teacherId, Pageable pageable) {
+        return ResponseEntity.ok(scheduleService.getByTeacherIdPaged(teacherId, pageable));
     }
 
     @GetMapping("/date/{date}")
