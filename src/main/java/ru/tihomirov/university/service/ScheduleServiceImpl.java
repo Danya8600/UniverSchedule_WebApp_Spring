@@ -34,6 +34,16 @@ public class ScheduleServiceImpl implements ScheduleService {
         schedule.setClassType(classTypeRepository.findById(schedule.getClassType().getId())
                 .orElseThrow(() -> new EntityNotFoundException("ClassType not found")));
 
+        if (scheduleRepository.existsByGroupIdAndDateAndStartTimeLessThanAndEndTimeGreaterThan(
+                schedule.getGroup().getId(), schedule.getDate(), schedule.getEndTime(), schedule.getStartTime())) {
+            throw new IllegalStateException("Группа уже занята в это время");
+        }
+
+        if (scheduleRepository.existsByTeacherIdAndDateAndStartTimeLessThanAndEndTimeGreaterThan(
+                schedule.getTeacher().getId(), schedule.getDate(), schedule.getEndTime(), schedule.getStartTime())) {
+            throw new IllegalStateException("Преподаватель уже занят в это время");
+        }
+
         return scheduleRepository.save(schedule);
     }
 
@@ -42,8 +52,17 @@ public class ScheduleServiceImpl implements ScheduleService {
         if (!scheduleRepository.existsById(id)) {
             throw new EntityNotFoundException("Schedule not found with id: " + id);
         }
-        updatedSchedule.setId(id);
-        return save(updatedSchedule);
+
+        Schedule old = getById(id);
+        scheduleRepository.deleteById(id);
+
+        try {
+            updatedSchedule.setId(id);
+            return save(updatedSchedule);
+        } catch (RuntimeException e) {
+            scheduleRepository.save(old);
+            throw e;
+        }
     }
 
     @Override
