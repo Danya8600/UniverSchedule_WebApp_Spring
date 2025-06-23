@@ -9,6 +9,8 @@ import ru.tihomirov.university.exception.EntityNotFoundException;
 import ru.tihomirov.university.model.Schedule;
 import ru.tihomirov.university.repository.*;
 
+import ru.tihomirov.university.aop.LogExecutionTime;
+
 import java.time.LocalDate;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -23,7 +25,9 @@ public class ScheduleServiceImpl implements ScheduleService {
     private final TeacherRepository teacherRepository;
     private final ClassTypeRepository classTypeRepository;
 
+
     @Override
+    @LogExecutionTime
     public Schedule save(Schedule schedule) {
         schedule.setGroup(groupRepository.findById(schedule.getGroup().getId())
                 .orElseThrow(() -> new EntityNotFoundException("Group not found")));
@@ -48,6 +52,7 @@ public class ScheduleServiceImpl implements ScheduleService {
     }
 
     @Override
+    @LogExecutionTime
     public Schedule update(Long id, Schedule updatedSchedule) {
         Schedule existing = scheduleRepository.findById(id)
                 .orElseThrow(() -> new EntityNotFoundException("Schedule not found with id: " + id));
@@ -91,6 +96,7 @@ public class ScheduleServiceImpl implements ScheduleService {
 
 
     @Override
+    @LogExecutionTime
     public void delete(Long id) {
         if (!scheduleRepository.existsById(id)) {
             throw new EntityNotFoundException("Schedule not found with id: " + id);
