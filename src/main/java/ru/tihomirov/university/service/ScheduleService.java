@@ -25,4 +25,8 @@ public interface ScheduleService {
 
     List<ScheduleInfoDto> getFormattedScheduleByGroup(Long groupId);
     List<ScheduleInfoDto> getFormattedScheduleByTeacher(Long teacherId);
+
+    List<ScheduleInfoDto> getFormattedScheduleByGroupName(String groupName);
+    List<ScheduleInfoDto> getFormattedScheduleByTeacherEmail(String email);
+
 }

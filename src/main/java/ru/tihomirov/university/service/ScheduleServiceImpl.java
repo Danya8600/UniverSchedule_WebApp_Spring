@@ -49,21 +49,46 @@ public class ScheduleServiceImpl implements ScheduleService {
 
     @Override
     public Schedule update(Long id, Schedule updatedSchedule) {
-        if (!scheduleRepository.existsById(id)) {
-            throw new EntityNotFoundException("Schedule not found with id: " + id);
+        Schedule existing = scheduleRepository.findById(id)
+                .orElseThrow(() -> new EntityNotFoundException("Schedule not found with id: " + id));
+
+        // Заменяем поля
+        existing.setDate(updatedSchedule.getDate());
+        existing.setStartTime(updatedSchedule.getStartTime());
+        existing.setEndTime(updatedSchedule.getEndTime());
+
+        existing.setGroup(groupRepository.findById(updatedSchedule.getGroup().getId())
+                .orElseThrow(() -> new EntityNotFoundException("Group not found")));
+        existing.setCourse(courseRepository.findById(updatedSchedule.getCourse().getId())
+                .orElseThrow(() -> new EntityNotFoundException("Course not found")));
+        existing.setTeacher(teacherRepository.findById(updatedSchedule.getTeacher().getId())
+                .orElseThrow(() -> new EntityNotFoundException("Teacher not found")));
+        existing.setClassType(classTypeRepository.findById(updatedSchedule.getClassType().getId())
+                .orElseThrow(() -> new EntityNotFoundException("ClassType not found")));
+
+        // Проверка на конфликт времени по группе, исключая текущую запись
+        boolean groupConflict = scheduleRepository.findByGroupId(existing.getGroup().getId()).stream()
+                .anyMatch(s -> !s.getId().equals(id)
+                        && s.getDate().equals(existing.getDate())
+                        && s.getStartTime().isBefore(existing.getEndTime())
+                        && s.getEndTime().isAfter(existing.getStartTime()));
+        if (groupConflict) {
+            throw new IllegalStateException("Группа уже занята в это время");
         }
 
-        Schedule old = getById(id);
-        scheduleRepository.deleteById(id);
-
-        try {
-            updatedSchedule.setId(id);
-            return save(updatedSchedule);
-        } catch (RuntimeException e) {
-            scheduleRepository.save(old);
-            throw e;
+        // Проверка на конфликт времени по преподавателю, исключая текущую запись
+        boolean teacherConflict = scheduleRepository.findByTeacherId(existing.getTeacher().getId()).stream()
+                .anyMatch(s -> !s.getId().equals(id)
+                        && s.getDate().equals(existing.getDate())
+                        && s.getStartTime().isBefore(existing.getEndTime())
+                        && s.getEndTime().isAfter(existing.getStartTime()));
+        if (teacherConflict) {
+            throw new IllegalStateException("Преподаватель уже занят в это время");
         }
+
+        return scheduleRepository.save(existing);
     }
+
 
     @Override
     public void delete(Long id) {
@@ -135,4 +160,21 @@ public class ScheduleServiceImpl implements ScheduleService {
                 .setClassTypeName(s.getClassType().getName())
                 .setGroupName(s.getGroup().getName());
     }
+
+    @Override
+    public List<ScheduleInfoDto> getFormattedScheduleByGroupName(String groupName) {
+        return scheduleRepository.findByGroup_Name(groupName)
+                .stream()
+                .map(this::mapToDto)
+                .collect(Collectors.toList());
+    }
+
+    @Override
+    public List<ScheduleInfoDto> getFormattedScheduleByTeacherEmail(String email) {
+        return scheduleRepository.findByTeacher_Email(email)
+                .stream()
+                .map(this::mapToDto)
+                .collect(Collectors.toList());
+    }
+
 }

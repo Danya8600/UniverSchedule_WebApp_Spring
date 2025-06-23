@@ -17,7 +17,6 @@ import ru.tihomirov.university.security.CustomUserDetailsService;
 import ru.tihomirov.university.security.JwtAuthenticationFilter;
 import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity;
 
-
 @Configuration
 @EnableMethodSecurity
 @RequiredArgsConstructor
@@ -38,17 +37,18 @@ public class SecurityConfig {
                         .requestMatchers("/api/auth/login").permitAll()
 
                         // --- Только для ADMIN ---
-                        .requestMatchers("/api/admin/register").hasRole("ADMIN")
-                        .requestMatchers("/api/users/**").hasRole("ADMIN")
+                        .requestMatchers("/api/admin/**").hasRole("ADMIN")
                         .requestMatchers("/api/courses/**").hasRole("ADMIN")
                         .requestMatchers("/api/teachers/**").hasRole("ADMIN")
                         .requestMatchers("/api/groups/**").hasRole("ADMIN")
 
-                        // --- TEACHER и STUDENT ---
-                        .requestMatchers("/api/schedules/**").hasAnyRole("TEACHER", "STUDENT")
-                        .requestMatchers("/api/students/**").hasAnyRole("TEACHER", "STUDENT")
+                        // --- Расписание: ADMIN + TEACHER (управление), STUDENT (только просмотр)
+                        .requestMatchers("/api/schedules/**").hasAnyRole("ADMIN", "TEACHER", "STUDENT")
 
-                        // --- Остальные защищены ---
+                        // --- Студенты: ADMIN (управление), TEACHER и STUDENT (просмотр)
+                        .requestMatchers("/api/students/**").hasAnyRole("ADMIN", "TEACHER", "STUDENT")
+
+                        // --- Остальные ---
                         .anyRequest().authenticated()
                 )
                 .authenticationProvider(authenticationProvider())
