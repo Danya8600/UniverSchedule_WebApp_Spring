@@ -52,11 +52,8 @@ class ScheduleServiceTest {
         when(courseRepository.findById(2L)).thenReturn(Optional.of(new Course()));
         when(teacherRepository.findById(3L)).thenReturn(Optional.of(new Teacher()));
         when(classTypeRepository.findById(4L)).thenReturn(Optional.of(new ClassType()));
-
-        when(scheduleRepository.existsByGroupIdAndDateAndStartTimeLessThanAndEndTimeGreaterThan(any(), any(), any(), any()))
-                .thenReturn(false);
-        when(scheduleRepository.existsByTeacherIdAndDateAndStartTimeLessThanAndEndTimeGreaterThan(any(), any(), any(), any()))
-                .thenReturn(false);
+        when(scheduleRepository.existsByGroupIdAndDateAndStartTimeLessThanAndEndTimeGreaterThan(any(), any(), any(), any())).thenReturn(false);
+        when(scheduleRepository.existsByTeacherIdAndDateAndStartTimeLessThanAndEndTimeGreaterThan(any(), any(), any(), any())).thenReturn(false);
         when(scheduleRepository.save(any())).thenReturn(s);
 
         Schedule saved = scheduleService.save(s);
@@ -132,5 +129,29 @@ class ScheduleServiceTest {
 
         Schedule result = scheduleService.getById(1L);
         assertEquals(s.getId(), result.getId());
+    }
+
+    // NEW TESTS
+
+    @Test
+    void shouldThrowWhenScheduleToUpdateNotFound() {
+        Schedule update = createSampleSchedule();
+        when(scheduleRepository.findById(999L)).thenReturn(Optional.empty());
+
+        assertThrows(EntityNotFoundException.class, () -> scheduleService.update(999L, update));
+    }
+
+    @Test
+    void shouldThrowWhenScheduleToDeleteNotFound() {
+        when(scheduleRepository.existsById(999L)).thenReturn(false);
+        assertThrows(EntityNotFoundException.class, () -> scheduleService.delete(999L));
+    }
+
+    @Test
+    void shouldThrowWhenGroupNotFoundOnSave() {
+        Schedule s = createSampleSchedule();
+        when(groupRepository.findById(1L)).thenReturn(Optional.empty());
+
+        assertThrows(EntityNotFoundException.class, () -> scheduleService.save(s));
     }
 }
